@@ -1,0 +1,52 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* //--------------logo-animation----------------// */
+
+.logo {
+  transform: rotate(-30deg);
+  top: -30%;
+  left: -20%;
+  animation: logoAnimation 5s ease-in-out infinite;
+  opacity: 0.8;
+}
+
+@keyframes logoAnimation {
+  0% {
+    top: -30%;
+  }
+  20% {
+    top: 130%;
+  }
+  100% {
+    top: 130%;
+  }
+}
+
+/* //--------------theme-animation----------------// */
+
+.dark-mode {
+  animation: dark 0.6s ease-in-out forwards;
+}
+
+@keyframes dark {
+  0% {
+    transform: scale(0.9) rotate(150deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.light-mode {
+  animation: light 0.5s ease-in-out forwards;
+}
+
+@keyframes light {
+  0% {
+    transform: scale(0.7) rotate(180deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+  }
+}
