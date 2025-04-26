@@ -17,9 +17,8 @@ function Navbar() {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
   return (
-    <div className="fixed top-0 left-0 w-full h-[3.3rem] bg-white  px-[16rem] flex items-center dark:bg-zinc-800  border-b-[1px] border-zinc-200 dark:border-b-[1px] dark:border-zinc-700 transition-colors duration-500">
+    <div className="fixed top-0 left-0 w-full h-[3.3rem] bg-white  px-[16rem] flex items-center dark:bg-zinc-800  border-b-[1px] border-zinc-200 dark:border-b-[1px] dark:border-zinc-700 transition-colors duration-500 z-999">
       <div className="flex items-center w-[45%]">
-
         {/* //----------------------------------logo----------------------------------// */}
 
         <div className="relative w-[2.2rem] overflow-hidden cursor-pointer">
@@ -33,7 +32,7 @@ function Navbar() {
           <input
             type="text"
             placeholder="Search"
-            className="w-full h-full rounded-[5px] bg-gray-200 dark:bg-gray-500 dark:text-gray-200 px-10 focus:outline-2 focus:outline-gray-500 dark:placeholder-zinc-200 transition-colors duration-500"
+            className="w-full h-full rounded-[5px] bg-gray-200 dark:bg-gray-500 dark:text-gray-200 px-10 focus:outline-2 focus:outline-gray-500 dark:focus:outline-gray-100 dark:placeholder-zinc-200 transition-colors duration-500"
           />
           <IoSearchSharp className="absolute top-1/2 left-[1rem] -translate-y-1/2 dark:text-gray-200" />
         </div>
@@ -42,14 +41,14 @@ function Navbar() {
       {/* //----------------------------------Navigations----------------------------------// */}
 
       <ul className="flex-1 flex justify-between items-center">
-        <li>
+        <li className="relative">
           <NavLink
             to="/"
             className={({ isActive }) =>
-              `flex flex-col items-center hover:text-black ${
+              `flex flex-col items-center hover:text-black dark:hover:text-white after:content-[''] after:absolute after:top-[105%] after:h-[2px] after:bg-black dark:after:bg-white after:transition-width after:duration-300 after:ease-in-out ${
                 isActive
-                  ? "text-black dark:text-white"
-                  : "text-zinc-500 dark:text-zinc-400"
+                  ? "text-black dark:text-white after:w-[100%] after:left-0"
+                  : "text-zinc-500 dark:text-zinc-400 after:w-0 after:left-1/2"
               }`
             }
           >
@@ -57,14 +56,14 @@ function Navbar() {
             <p className="text-[14px] font-normal">Home</p>
           </NavLink>
         </li>
-        <li>
+        <li className="relative">
           <NavLink
             to="/addproject"
             className={({ isActive }) =>
-              `flex flex-col items-center hover:text-black  ${
+              `flex flex-col items-center hover:text-black dark:hover:text-white after:content-[''] after:absolute after:top-[105%] after:h-[2px] after:bg-black dark:after:bg-white after:transition-width after:duration-300 after:ease-in-out ${
                 isActive
-                  ? "text-black dark:text-white"
-                  : "text-zinc-500 dark:text-zinc-400"
+                  ? "text-black dark:text-white after:w-[100%] after:left-0"
+                  : "text-zinc-500 dark:text-zinc-400 after:w-0 after:left-1/2"
               }`
             }
           >
@@ -72,14 +71,14 @@ function Navbar() {
             <p className="text-[14px] font-normal">Add Project</p>
           </NavLink>
         </li>
-        <li>
+        <li className="relative">
           <NavLink
             to="/messages"
             className={({ isActive }) =>
-              `flex flex-col items-center hover:text-black  ${
+              `flex flex-col items-center hover:text-black dark:hover:text-white after:content-[''] after:absolute after:top-[105%] after:h-[2px] after:bg-black dark:after:bg-white after:transition-width after:duration-300 after:ease-in-out ${
                 isActive
-                  ? "text-black dark:text-white"
-                  : "text-zinc-500 dark:text-zinc-400"
+                  ? "text-black dark:text-white after:w-[100%] after:left-0"
+                  : "text-zinc-500 dark:text-zinc-400 after:w-0 after:left-1/2"
               }`
             }
           >
@@ -88,14 +87,14 @@ function Navbar() {
           </NavLink>
         </li>
 
-        <li>
+        <li className="relative">
           <NavLink
             to="/profile"
             className={({ isActive }) =>
-              `flex flex-col items-center hover:text-black  ${
+              `flex flex-col items-center hover:text-black dark:hover:text-white after:content-[''] after:absolute after:top-[105%] after:h-[2px] after:bg-black dark:after:bg-white after:transition-width after:duration-300 after:ease-in-out ${
                 isActive
-                  ? "text-black dark:text-white"
-                  : "text-zinc-500 dark:text-zinc-400"
+                  ? "text-black dark:text-white after:w-[100%] after:left-0"
+                  : "text-zinc-500 dark:text-zinc-400 after:w-0 after:left-1/2"
               }`
             }
           >
@@ -108,11 +107,11 @@ function Navbar() {
           onClick={handleTheme}
         >
           {theme === "light" ? (
-            <div className="border-2 border-black rounded-full overflow-hidden">
-              <MdModeNight className="dark-mode w-[2.2rem] h-[2.2rem] p-[5px] " />
+            <div className="group border-2 border-black rounded-full overflow-hidden hover:bg-black transition-all duration-300 ease-in-out">
+              <MdModeNight className="dark-mode w-[2.2rem] h-[2.2rem] p-[5px] text-black group-hover:text-[#FCF259]" />
             </div>
           ) : (
-            <MdLightMode className="light-mode w-[2.2rem] h-[2.2rem] dark:text-white" />
+            <MdLightMode className="light-mode w-[2.2rem] h-[2.2rem] dark:text-white hover:text-[#FCF259] transition-all duration-300 ease-in-out" />
           )}
         </li>
       </ul>

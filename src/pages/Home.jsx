@@ -1,9 +1,17 @@
-import React from 'react'
+import React, { useContext } from "react";
+import { ProjectsConetxt } from "../Context/ProjectsContext";
+
+import Project from "../components/Project";
 
 function Home() {
+  const { projectsData, setProjectsData } = useContext(ProjectsConetxt);
   return (
-    <div>Home</div>
-  )
+    <div className="flex flex-col gap-2 w-full">
+      {projectsData.map((project) => (
+       <Project key={project.id} project={project}/>
+      ))}
+    </div>
+  );
 }
 
-export default Home
+export default Home;

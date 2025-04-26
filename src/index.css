@@ -1,8 +1,11 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Jersey+15&family=Kumbh+Sans:wght@100..900&family=League+Spartan:wght@100..900&family=Outfit:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Prata&family=Red+Hat+Text:ital,wght@0,300..700;1,300..700&family=Roboto&family=Roboto+Condensed:ital,wght@0,100..900;1,100..900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap');
 
 /* //--------------logo-animation----------------// */
-
+*{
+    font-family: "Inter", sans-serif;
+}
 .logo {
   transform: rotate(-30deg);
   top: -30%;
@@ -50,3 +53,23 @@
     transform: scale(1) rotate(0deg);
   }
 }
+
+/* //--------------comments-animation----------------// */
+
+
+.comments-section {
+    animation: dropDown 0.2s ease-in-out forwards;
+    overflow: hidden;
+  }
+
+@keyframes dropDown {
+    0% {
+      transform: translateY(-20px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
