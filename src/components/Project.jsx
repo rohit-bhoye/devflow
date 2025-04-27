@@ -1,12 +1,13 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { IoMdThumbsUp } from "react-icons/io";
 import { BsHandThumbsUp } from "react-icons/bs";
 import { TfiCommentAlt } from "react-icons/tfi";
 import { RiSendPlaneFill } from "react-icons/ri";
 import Comment from "./Comment";
+import TextArea from "./TextArea";
 function Project({ project }) {
   const [showComments, setShowComments] = useState(false);
-  const textareaRef = useRef(null);
+  const [commentText, setCommentText] = useState("");
   const topcomments = project.comments.length;
   const allReplies = project.comments.map((c) => c.replies.flat());
   const total_comments = topcomments + allReplies.length;
@@ -15,11 +16,14 @@ function Project({ project }) {
     setShowComments(!showComments);
   };
 
-  const handleInput = () => {
-    const textarea = textareaRef.current;
-    textarea.style.height = "auto";
-    textarea.style.height = `${textarea.scrollHeight}px`;
+  const handleText = (e) => {
+    setCommentText(e.target.value);
   };
+
+  const handleCancel = () => {
+    setCommentText("");
+  };
+
   return (
     <div className="bg-white flex flex-col gap-[2rem] w-full p-[1rem] border border-black/10 dark:bg-zinc-800 dark:text-white transition-colors duration-500 rounded-[8px]">
       <div className="flex gap-4 h-[5rem] ">
@@ -99,15 +103,13 @@ function Project({ project }) {
 
       {showComments && (
         <div className="comments-section">
-          <div>
-            <textarea
-              ref={textareaRef}
-              onInput={handleInput}
-              placeholder="Add a comment..."
-              className="resize-none overflow-hidden w-full min-h-[1rem] p-[1rem] border-1 border-gray-400 rounded-lg placeholder:text-lg focus:outline-none focus:ring-1 focus:ring-blue-500 transition-all duration-300"
-            />
-          </div>
-          <div>
+          <TextArea
+            btnText={"Comment"}
+            text={commentText}
+            handleText={handleText}
+            handleCancel={handleCancel}
+          />
+          <div className="mt-[1rem] flex flex-col gap-[.8rem]">
             {project.comments.map((comment) => (
               <Comment key={comment.comment_id} comment={comment} />
             ))}

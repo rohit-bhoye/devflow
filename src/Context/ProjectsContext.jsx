@@ -1,13 +1,13 @@
 import { createContext, useState } from "react";
 import project_collection from "../assets/assets";
-export const ProjectsConetxt = createContext();
+export const ProjectsContext = createContext();
 
 const ProjectsDataProvider = ({ children }) => {
   const [projectsData, setProjectsData] = useState(project_collection);
   return (
-    <ProjectsConetxt.Provider value={{ projectsData, setProjectsData }}>
+    <ProjectsContext.Provider value={{ projectsData, setProjectsData }}>
       {children}
-    </ProjectsConetxt.Provider>
+    </ProjectsContext.Provider>
   );
 };
 

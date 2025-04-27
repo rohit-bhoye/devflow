@@ -1,10 +1,10 @@
 import React, { useContext } from "react";
-import { ProjectsConetxt } from "../Context/ProjectsContext";
+import { ProjectsContext } from "../Context/ProjectsContext";
 
 import Project from "../components/Project";
 
 function Home() {
-  const { projectsData, setProjectsData } = useContext(ProjectsConetxt);
+  const { projectsData, setProjectsData } = useContext(ProjectsContext);
   return (
     <div className="flex flex-col gap-2 w-full">
       {projectsData.map((project) => (
