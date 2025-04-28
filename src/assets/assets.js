@@ -17,7 +17,7 @@ const project_collection = [
     project_description:
       "Having unique usernames is the better approach to avoid confusion, ensure proper identification of users, and maintain a clean user experience on your platform. If you're planning on building out features like user profiles, following systems, or comments, uniqueness will be crucial for preventing any issues.",
     tools: ["React", "Firebase", "html", "css", "javascript", "react-router"],
-    likes: 12,
+    likes: new Set(),
     comments: [
       {
         comment_id: "c1",
@@ -26,7 +26,7 @@ const project_collection = [
         profile_photo: "shanks.jpg",
         comment_text: "This project looks awesome!",
         time: "2h",
-        likes: 10,
+        likes: new Set(),
         replies: [],
       },
       {
@@ -36,7 +36,7 @@ const project_collection = [
         profile_photo: "devmaster.jpg",
         comment_text: "I love the UI design.",
         time: "1h",
-        likes: 7,
+        likes: new Set(),
         replies: [
           {
             reply_id: "r1",
@@ -45,7 +45,7 @@ const project_collection = [
             reply_text: "Having unique usernames is the better approach to avoid confusion, ensure proper identification of users, and maintain a clean user experience on your platform. If you're planning on building out features like user profiles, following systems, or comments, uniqueness will be crucial for preventing any issues.",
             replying_to: "devmaster",
             time: "55m",
-            likes: 3,
+            likes: new Set(),
           },
           {
             reply_id: "r2",
@@ -55,7 +55,7 @@ const project_collection = [
               "True! I wish more projects had this kind of layout.",
             replying_to:"coder101",
             time: "50m",
-            likes: 2,
+            likes: new Set(),
           },
           {
             reply_id: "r3",
@@ -64,7 +64,7 @@ const project_collection = [
             reply_text: "Thanks! Working on adding dark mode too.",
             replying_to: "frontendfan",
             time: "45m",
-            likes: 4,
+            likes: new Set(),
           },
         ],
       },
@@ -75,7 +75,7 @@ const project_collection = [
         profile_photo: "reactlover.jpg",
         comment_text: "Can you share the GitHub repo?",
         time: "30m",
-        likes: 1,
+        likes: new Set(),
         replies: [],
       },
     ],

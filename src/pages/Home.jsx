@@ -4,7 +4,8 @@ import { ProjectsContext } from "../Context/ProjectsContext";
 import Project from "../components/Project";
 
 function Home() {
-  const { projectsData, setProjectsData } = useContext(ProjectsContext);
+  const { projectsData} = useContext(ProjectsContext);
+
   return (
     <div className="flex flex-col gap-2 w-full">
       {projectsData.map((project) => (

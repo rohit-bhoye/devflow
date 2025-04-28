@@ -1,14 +1,27 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { IoIosArrowDown } from "react-icons/io";
 import { BsHandThumbsUp } from "react-icons/bs";
 import TextArea from "./TextArea";
 import Replies from "./Replies";
+import getTimeAgo from "../getTimeAgo";
+import { ProjectsContext } from "../Context/ProjectsContext";
 
-function Comment({ comment }) {
+function Comment({ comment, projectId }) {
+  const { dispatch } = useContext(ProjectsContext);
   const [showReplies, setShowReplies] = useState(false);
   const [addReply, setAddReply] = useState(false);
   const [replyText, setReplyText] = useState("");
+  const [timeAgo, setTimeAgo] = useState("");
+
+  
+
+  useEffect(() => {
+    setTimeAgo(getTimeAgo(comment.time));
+    return () => {
+      setTimeAgo("");
+    };
+  }, [comment.time]);
 
   const handleShowReplies = () => {
     setShowReplies(!showReplies);
@@ -23,12 +36,35 @@ function Comment({ comment }) {
     setAddReply(false);
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const currentTime = new Date().getTime();
+    const newReply = {
+      reply_id: Date.now(),
+      user_id: "u3",
+      username: "rahul",
+      reply_text: replyText,
+      replying_to: comment.username,
+      time: currentTime,
+      likes: new Set(),
+    };
+
+    dispatch({
+        type:"ADD_REPLY",
+        projectId:projectId,
+        commentId:comment.comment_id,
+        newReply:newReply,
+    })
+    setReplyText("");
+    setAddReply(false);
+  };
+
   return (
     <div className="flex flex-col justify-center">
       <div className="flex justify-between">
         <p className="font-bold cursor-pointer">@{comment.username}</p>
         <div className="flex items-center gap-4 text-zinc-500 dark:text-zinc-300">
-          <p>{comment.time}</p>
+          <p>{timeAgo}</p>
           <BsThreeDots className="cursor-pointer text-lg" />
         </div>
       </div>
@@ -39,7 +75,7 @@ function Comment({ comment }) {
       <div className="flex gap-3">
         <div className="flex gap-1">
           <BsHandThumbsUp className="transform -scale-x-100 h-[1.3rem] w-[1.3rem] cursor-pointer" />
-          <p>{comment.likes}</p>
+          <p>{comment.likes.size}</p>
         </div>
         <p
           role="button"
@@ -52,6 +88,7 @@ function Comment({ comment }) {
       {addReply && (
         <TextArea
           btnText={"Reply"}
+          handleSubmit={handleSubmit}
           addReply={addReply}
           text={replyText}
           handleText={handleText}
@@ -73,7 +110,7 @@ function Comment({ comment }) {
       {showReplies && (
         <div className="ml-[2rem] flex flex-col gap-[1rem]">
           {comment.replies.map((reply) => (
-            <Replies key={reply.reply_id} reply={reply} />
+            <Replies key={reply.reply_id} reply={reply} projectId={projectId} commentId={comment.comment_id}/>
           ))}
         </div>
       )}
