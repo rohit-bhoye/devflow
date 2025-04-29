@@ -1,14 +1,18 @@
 import React, { useContext, useEffect, useState } from "react";
 import { BsHandThumbsUp } from "react-icons/bs";
+import { BsHandThumbsUpFill } from "react-icons/bs";
 import { BsThreeDots } from "react-icons/bs";
 import TextArea from "./TextArea";
 import getTimeAgo from "../getTimeAgo";
 import { ProjectsContext } from "../Context/ProjectsContext";
+
 function Replies({ reply, projectId, commentId }) {
-  const { dispatch } = useContext(ProjectsContext);
+  const { dispatch, userId } = useContext(ProjectsContext);
   const [addReply, setAddReply] = useState(false);
   const [replyText, setReplyText] = useState("");
   const [timeAgo, setTimeAgo] = useState("");
+
+  // --------------------------------------SETTIMEAGO useEFFECT--------------------------------------//
 
   useEffect(() => {
     setTimeAgo(getTimeAgo(reply.time));
@@ -17,14 +21,19 @@ function Replies({ reply, projectId, commentId }) {
     };
   }, [reply.time]);
 
+  // --------------------------------------HANDLE_REPLY_TEXT--------------------------------------//
   const handleText = (e) => {
     setReplyText(e.target.value);
   };
+
+  // --------------------------------------HANDLE_CANCEL--------------------------------------//
 
   const handleCancel = () => {
     setReplyText("");
     setAddReply(false);
   };
+
+  // --------------------------------------HANDLE_SUBMIT--------------------------------------//
 
   const handleSubmit = (e) => {
     console.log("hi");
@@ -40,6 +49,8 @@ function Replies({ reply, projectId, commentId }) {
       likes: new Set(),
     };
 
+    // --------------------------------------ADD_REPLY--------------------------------------//
+
     dispatch({
       type: "ADD_REPLY",
       projectId: projectId,
@@ -50,6 +61,19 @@ function Replies({ reply, projectId, commentId }) {
     setReplyText("");
     setAddReply(false);
   };
+
+  // --------------------------------------HANDLE_REPLY_LIKE--------------------------------------//
+
+  const handleReplyLike = () => {
+    dispatch({
+      type: "REPLY_LIKE",
+      projectId: projectId,
+      commentId: commentId,
+      userId: userId,
+      replyId: reply.reply_id,
+    });
+  };
+
   return (
     <div className="flex flex-col justify-center">
       <div className="flex justify-between">
@@ -75,7 +99,13 @@ function Replies({ reply, projectId, commentId }) {
 
       <div className="flex gap-3">
         <div className="flex gap-1">
-          <BsHandThumbsUp className="transform -scale-x-100 h-[1.3rem] w-[1.3rem] cursor-pointer" />
+          <div role="button" onClick={handleReplyLike}>
+            {reply.likes.has(userId) ? (
+              <BsHandThumbsUpFill className="transform -scale-x-100 h-[1.3rem] w-[1.3rem] cursor-pointer" />
+            ) : (
+              <BsHandThumbsUp className="transform -scale-x-100 h-[1.3rem] w-[1.3rem] cursor-pointer" />
+            )}
+          </div>
           <p>{reply.likes.size}</p>
         </div>
 

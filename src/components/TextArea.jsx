@@ -17,6 +17,8 @@ function TextArea({
 
   return (
     <form onSubmit={handleSubmit} className="mt-[1rem] px-[2px]">
+      {/* //
+      --------------------------------------TEXTAREA--------------------------------------// */}
       <textarea
         ref={textareaRef}
         value={text}
@@ -25,6 +27,8 @@ function TextArea({
         placeholder="Add a comment..."
         className="resize-none overflow-hidden w-full min-h-[1rem] p-[1rem] pb-[20px] border-[1px] dark:border-[1px] dark:border-gray-300 rounded-lg placeholder:text-lg focus:outline-2 focus:outline-zinc-500 dark:focus:outline-gray-300 "
       />
+
+      {/* //--------------------------------------BUTTONS--------------------------------------// */}
       {((text.trim().length > 0 && btnText === "Comment") || addReply) && (
         <div className="w-full flex justify-between px-[1rem]  mt-3 ">
           <button

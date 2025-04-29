@@ -2,20 +2,20 @@ import React, { useContext, useEffect, useState } from "react";
 import { BsThreeDots } from "react-icons/bs";
 import { IoIosArrowDown } from "react-icons/io";
 import { BsHandThumbsUp } from "react-icons/bs";
+import { BsHandThumbsUpFill } from "react-icons/bs";
 import TextArea from "./TextArea";
 import Replies from "./Replies";
 import getTimeAgo from "../getTimeAgo";
 import { ProjectsContext } from "../Context/ProjectsContext";
 
 function Comment({ comment, projectId }) {
-  const { dispatch } = useContext(ProjectsContext);
+  const { dispatch, userId } = useContext(ProjectsContext);
   const [showReplies, setShowReplies] = useState(false);
   const [addReply, setAddReply] = useState(false);
   const [replyText, setReplyText] = useState("");
   const [timeAgo, setTimeAgo] = useState("");
 
-  
-
+  // --------------------------------------SET_TIME_AGO--------------------------------------//
   useEffect(() => {
     setTimeAgo(getTimeAgo(comment.time));
     return () => {
@@ -23,18 +23,25 @@ function Comment({ comment, projectId }) {
     };
   }, [comment.time]);
 
+  // --------------------------------------SHOW_REPLIES--------------------------------------//
   const handleShowReplies = () => {
     setShowReplies(!showReplies);
   };
+
+  // --------------------------------------REPLY_TEXT--------------------------------------//
 
   const handleText = (e) => {
     setReplyText(e.target.value);
   };
 
+  // --------------------------------------HANDLE_CANCEL--------------------------------------//
+
   const handleCancel = () => {
     setReplyText("");
     setAddReply(false);
   };
+
+  // --------------------------------------HANDLE_SUBMIT--------------------------------------//
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -49,14 +56,27 @@ function Comment({ comment, projectId }) {
       likes: new Set(),
     };
 
+    // --------------------------------------ADD_REPLY--------------------------------------//
+
     dispatch({
-        type:"ADD_REPLY",
-        projectId:projectId,
-        commentId:comment.comment_id,
-        newReply:newReply,
-    })
+      type: "ADD_REPLY",
+      projectId: projectId,
+      commentId: comment.comment_id,
+      newReply: newReply,
+    });
     setReplyText("");
     setAddReply(false);
+  };
+
+  // --------------------------------------HANDLE_COMMENT_LIKE--------------------------------------//
+
+  const handleCommentLike = () => {
+    dispatch({
+      type: "COMMENT_LIKE",
+      projectId: projectId,
+      commentId: comment.comment_id,
+      userId: userId,
+    });
   };
 
   return (
@@ -73,8 +93,15 @@ function Comment({ comment, projectId }) {
       </p>
 
       <div className="flex gap-3">
-        <div className="flex gap-1">
-          <BsHandThumbsUp className="transform -scale-x-100 h-[1.3rem] w-[1.3rem] cursor-pointer" />
+        <div className="flex gap-1 select-none">
+          <div role="button" onClick={handleCommentLike}>
+            {comment.likes.has(userId) ? (
+              <BsHandThumbsUpFill className="transform -scale-x-100 h-[1.3rem] w-[1.3rem] cursor-pointer" />
+            ) : (
+              <BsHandThumbsUp className="transform -scale-x-100 h-[1.3rem] w-[1.3rem] cursor-pointer" />
+            )}
+          </div>
+
           <p>{comment.likes.size}</p>
         </div>
         <p
@@ -110,7 +137,12 @@ function Comment({ comment, projectId }) {
       {showReplies && (
         <div className="ml-[2rem] flex flex-col gap-[1rem]">
           {comment.replies.map((reply) => (
-            <Replies key={reply.reply_id} reply={reply} projectId={projectId} commentId={comment.comment_id}/>
+            <Replies
+              key={reply.reply_id}
+              reply={reply}
+              projectId={projectId}
+              commentId={comment.comment_id}
+            />
           ))}
         </div>
       )}

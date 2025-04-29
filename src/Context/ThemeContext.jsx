@@ -10,10 +10,10 @@ const ThemeProvider = ({ children }) => {
   useEffect(() => {
     localStorage.setItem("themeMode", theme);
     if (theme === "dark") {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
   }, [theme]);
   return (
     <ThemeContext.Provider value={{ theme, setTheme }}>

@@ -16,6 +16,7 @@ function Navbar() {
   const handleTheme = () => {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
+  
   return (
     <div className="fixed top-0 left-0 w-full h-[3.3rem] bg-white  px-[16rem] flex items-center dark:bg-zinc-800  border-b-[1px] border-zinc-200 dark:border-b-[1px] dark:border-zinc-700 transition-colors duration-500 z-999">
       <div className="flex items-center w-[45%]">
@@ -102,6 +103,9 @@ function Navbar() {
             <p className="text-[14px] font-normal">Profile</p>
           </NavLink>
         </li>
+
+        {/* // --------------------------------------THEME--------------------------------------// */}
+
         <li
           className="flex flex-col items-center w-[3rem] cursor-pointer"
           onClick={handleTheme}

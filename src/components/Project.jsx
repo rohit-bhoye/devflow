@@ -7,12 +7,14 @@ import { RiSendPlaneFill } from "react-icons/ri";
 import Comment from "./Comment";
 import TextArea from "./TextArea";
 import { ProjectsContext } from "../Context/ProjectsContext";
+
 function Project({ project }) {
   const { dispatch, userId } = useContext(ProjectsContext);
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [totalComments, setTotalComments] = useState(0);
 
+  // --------------------------------------SET_TOTAL_COMMENTS--------------------------------------//
   useEffect(() => {
     const topcomments = project.comments.length;
     const allReplies = project.comments.flatMap((c) => c.replies);
@@ -20,17 +22,25 @@ function Project({ project }) {
     setTotalComments(total_comments);
   }, [project.comments]);
 
+  // --------------------------------------SHOW_COMMENTS--------------------------------------//
+
   const handleShowComments = () => {
     setShowComments(!showComments);
   };
+
+  // --------------------------------------HANDLE_COMMENT_TEXT--------------------------------------//
 
   const handleText = (e) => {
     setCommentText(e.target.value);
   };
 
+  // --------------------------------------HANDLE_CANCEL--------------------------------------//
+
   const handleCancel = () => {
     setCommentText("");
   };
+
+  // --------------------------------------HANDLE_SUBMIT--------------------------------------//
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -42,10 +52,11 @@ function Project({ project }) {
       profile_photo: "/",
       comment_text: commentText,
       time: currentTime,
-      likes: 0,
+      likes:new Set(),
       replies: [],
     };
 
+    // --------------------------------------ADD_COMMENT--------------------------------------//
     dispatch({
       type: "ADD_COMMENT",
       projectId: project.id,
@@ -54,6 +65,8 @@ function Project({ project }) {
 
     setCommentText("");
   };
+
+  // --------------------------------------HANDLE_PROJECT_LIKE--------------------------------------//
 
   const handleProjectLike = () => {
     dispatch({
@@ -66,6 +79,9 @@ function Project({ project }) {
   return (
     <div className="bg-white flex flex-col gap-[2rem] w-full p-[1rem] border border-black/10 dark:bg-zinc-800 dark:text-white transition-colors duration-500 rounded-[8px]">
       <div className="flex gap-4 h-[5rem] ">
+
+      {/* // --------------------------------------PROFILE_PHOTO--------------------------------------// */}
+
         <div className="h-full w-[5rem]  rounded-[50%] overflow-hidden">
           <img
             src={project.profile_photo}
@@ -74,11 +90,15 @@ function Project({ project }) {
           />
         </div>
 
+        {/* // --------------------------------------USERNAME--------------------------------------// */}
+
         <div className="flex flex-col justify-between py-2">
           <p className="font-[600] text-2xl">{project.username}</p>
           <p className="text-zinc-500 dark:text-zinc-300">{project.time}</p>
         </div>
       </div>
+
+      {/* // --------------------------------------NAME_IMAGE_TOOL_DESCRIPTION--------------------------------------// */}
 
       <div className="flex flex-col gap-4">
         <h2 className="font-[500] text-xl text-zinc-700 dark:text-zinc-300">
@@ -101,6 +121,8 @@ function Project({ project }) {
         </p>
       </div>
 
+      {/* // --------------------------------------LIKES--------------------------------------// */}
+
       <div className="flex items-center justify-between">
         <div className="flex gap-2">
           <IoMdThumbsUp className="transform -scale-x-100 h-[1.3rem] w-[1.3rem] " />
@@ -119,7 +141,7 @@ function Project({ project }) {
       </div>
       <hr className=" w-full border-t border-t-zinc-300 dark:border-t-zinc-200" />
 
-      {/* -----------------------------------Like----------------------------------- */}
+      {/* -----------------------------------Like_BUTTON----------------------------------- */}
 
       <div className="flex items-center justify-around">
         <div
