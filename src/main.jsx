@@ -5,14 +5,17 @@ import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import ThemeProvider from "./Context/ThemeContext.jsx";
 import ProjectsDataProvider from "./Context/ProjectsContext.jsx";
+import LoginProvider from "./Context/LoginContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ThemeProvider>
       <BrowserRouter>
-        <ProjectsDataProvider>
-          <App />
-        </ProjectsDataProvider>
+        <LoginProvider>
+          <ProjectsDataProvider>
+            <App />
+          </ProjectsDataProvider>
+        </LoginProvider>
       </BrowserRouter>
     </ThemeProvider>
   </StrictMode>

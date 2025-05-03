@@ -1,9 +1,11 @@
 import logo from "./logo.png";
 import contact from "./contact_img.png";
+import empty_profile from "./empty_profile.png";
 
 export const assets = {
   logo,
   contact,
+  empty_profile,
 };
 
 const project_collection = [
@@ -12,7 +14,7 @@ const project_collection = [
     profile_photo: logo,
     username: "Shanks",
     time: "7h",
-    project_name:"E-commerce App",
+    project_name: "E-commerce App",
     project_image: [contact],
     project_description:
       "Having unique usernames is the better approach to avoid confusion, ensure proper identification of users, and maintain a clean user experience on your platform. If you're planning on building out features like user profiles, following systems, or comments, uniqueness will be crucial for preventing any issues.",
@@ -42,7 +44,8 @@ const project_collection = [
             reply_id: "r1",
             user_id: "u3",
             username: "coder101",
-            reply_text: "Having unique usernames is the better approach to avoid confusion, ensure proper identification of users, and maintain a clean user experience on your platform. If you're planning on building out features like user profiles, following systems, or comments, uniqueness will be crucial for preventing any issues.",
+            reply_text:
+              "Having unique usernames is the better approach to avoid confusion, ensure proper identification of users, and maintain a clean user experience on your platform. If you're planning on building out features like user profiles, following systems, or comments, uniqueness will be crucial for preventing any issues.",
             replying_to: "devmaster",
             time: "55m",
             likes: new Set(),
@@ -51,9 +54,8 @@ const project_collection = [
             reply_id: "r2",
             user_id: "u4",
             username: "frontendfan",
-            reply_text:
-              "True! I wish more projects had this kind of layout.",
-            replying_to:"coder101",
+            reply_text: "True! I wish more projects had this kind of layout.",
+            replying_to: "coder101",
             time: "50m",
             likes: new Set(),
           },

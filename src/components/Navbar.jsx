@@ -16,9 +16,9 @@ function Navbar() {
   const handleTheme = () => {
     setTheme((prev) => (prev === "light" ? "dark" : "light"));
   };
-  
+
   return (
-    <div className="fixed top-0 left-0 w-full h-[3.3rem] bg-white  px-[16rem] flex items-center dark:bg-zinc-800  border-b-[1px] border-zinc-200 dark:border-b-[1px] dark:border-zinc-700 transition-colors duration-500 z-999">
+    <div className="fixed top-0 left-0 w-full h-[3.3rem] bg-white  px-[16rem] flex items-center dark:bg-zinc-800  border-b-[1px] border-zinc-200 dark:border-b-[1px] dark:border-zinc-700 transition-colors duration-500 z-25">
       <div className="flex items-center w-[45%]">
         {/* //----------------------------------logo----------------------------------// */}
 
@@ -44,7 +44,7 @@ function Navbar() {
       <ul className="flex-1 flex justify-between items-center">
         <li className="relative">
           <NavLink
-            to="/"
+            to="/home"
             className={({ isActive }) =>
               `flex flex-col items-center hover:text-black dark:hover:text-white after:content-[''] after:absolute after:top-[105%] after:h-[2px] after:bg-black dark:after:bg-white after:transition-width after:duration-300 after:ease-in-out ${
                 isActive
