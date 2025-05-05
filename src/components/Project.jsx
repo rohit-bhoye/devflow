@@ -52,7 +52,7 @@ function Project({ project }) {
       profile_photo: "/",
       comment_text: commentText,
       time: currentTime,
-      likes:new Set(),
+      likes: new Set(),
       replies: [],
     };
 
@@ -79,8 +79,7 @@ function Project({ project }) {
   return (
     <div className="bg-white flex flex-col gap-[2rem] w-full p-[1rem] border border-black/10 dark:bg-zinc-800 dark:text-white transition-colors duration-500 rounded-[8px]">
       <div className="flex gap-4 h-[5rem] ">
-
-      {/* // --------------------------------------PROFILE_PHOTO--------------------------------------// */}
+        {/* // --------------------------------------PROFILE_PHOTO--------------------------------------// */}
 
         <div className="h-full w-[5rem]  rounded-[50%] overflow-hidden">
           <img

@@ -6,10 +6,10 @@ export const LoginContext = createContext();
 
 const LoginProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const unSubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -25,14 +25,13 @@ const LoginProvider = ({ children }) => {
       value={{
         user,
         setUser,
-        loading,
-        setLoading,
         userName,
         setUserName,
         email,
         setEmail,
         password,
         setPassword,
+        loading,
       }}
     >
       {children}

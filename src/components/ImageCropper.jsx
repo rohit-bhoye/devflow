@@ -2,21 +2,25 @@ import React, { useCallback, useState } from "react";
 import Cropper from "react-easy-crop";
 import getCroppedImg from "../getCroppedImg";
 import { IoCloseCircleOutline } from "react-icons/io5";
+import { toast } from "react-toastify";
 
 function ImageCropper({ imageSrc, onCropDone, onCropCancel }) {
   const [zoom, setZoom] = useState(1);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
 
-  console.log(croppedAreaPixels);
-
   const onCropComplete = useCallback((_, value) => {
     setCroppedAreaPixels(value);
   }, []);
 
   const handleDone = async () => {
-    const croppedImage = await getCroppedImg(imageSrc, croppedAreaPixels);
-    onCropDone(croppedImage);
+    try {
+      const croppedImage = await getCroppedImg(imageSrc, croppedAreaPixels);
+      onCropDone(croppedImage);
+      toast.success("Image cropped and saved successfully!");
+    } catch (error) {
+      toast.error("Failed to crop the image. Please try again.");
+    }
   };
 
   return (

@@ -1,12 +1,13 @@
 import React, { useContext, useState } from "react";
 import { LoginContext } from "../Context/LoginContext";
-import { auth } from "../firebase/firebaseCongfig";
+import { auth, db } from "../firebase/firebaseCongfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { BiShow } from "react-icons/bi";
 import { BiHide } from "react-icons/bi";
+import { doc, getDoc } from "firebase/firestore";
 
 function Login() {
   const { userName, setUserName, email, setEmail, password, setPassword } =
@@ -24,7 +25,7 @@ function Login() {
         setEmail("");
         setPassword("");
         setUserName("");
-        navigate("/createprofile");
+        navigate("/");
       } catch (error) {
         if (error.code === "auth/email-already-in-use") {
           toast.error("This email is already registered.");
@@ -38,10 +39,23 @@ function Login() {
       }
     } else {
       try {
-        await signInWithEmailAndPassword(auth, email, password);
+        const userCredential = await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+
+        const user = userCredential.user;
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+          navigate("/home");
+        } else {
+          navigate("/createprofile");
+        }
         setEmail("");
         setPassword("");
-        navigate("/createprofile");
       } catch (error) {
         if (error.code === "auth/invalid-credential") {
           toast.error("Incorrect email or password.");

@@ -6,15 +6,18 @@ import { BrowserRouter } from "react-router-dom";
 import ThemeProvider from "./Context/ThemeContext.jsx";
 import ProjectsDataProvider from "./Context/ProjectsContext.jsx";
 import LoginProvider from "./Context/LoginContext.jsx";
+import ProfileProvider from "./Context/ProfileContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ThemeProvider>
       <BrowserRouter>
         <LoginProvider>
-          <ProjectsDataProvider>
-            <App />
-          </ProjectsDataProvider>
+          <ProfileProvider>
+            <ProjectsDataProvider>
+              <App />
+            </ProjectsDataProvider>
+          </ProfileProvider>
         </LoginProvider>
       </BrowserRouter>
     </ThemeProvider>
