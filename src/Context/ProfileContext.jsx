@@ -1,21 +1,25 @@
-import { createContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import { skillOptions } from "../assets/assets";
 import { jobOptions } from "../assets/assets";
-import { auth, db } from "../firebase/firebaseCongfig";
+import { db } from "../firebase/firebaseCongfig";
 import { toast } from "react-toastify";
 import {
   collection,
   doc,
+  getDoc,
   getDocs,
   query,
   setDoc,
   where,
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
+import { LoginContext } from "./LoginContext";
 
 export const ProfileContext = createContext();
 
 const ProfileProvider = ({ children }) => {
+  const { user } = useContext(LoginContext);
+  const [userProfile, setUserProfile] = useState(null);
   const [profileData, setProfileData] = useState({
     fullName: "",
     username: "",
@@ -27,8 +31,9 @@ const ProfileProvider = ({ children }) => {
 
   const navigate = useNavigate();
 
+  //--------------------------------------------------SAVE USER PROFILE--------------------------------------------------//
+
   const saveUserProfile = async (image) => {
-    const user = auth.currentUser;
     if (!user) {
       toast.error("User not logged in");
       return;
@@ -58,6 +63,7 @@ const ProfileProvider = ({ children }) => {
         createdAt: new Date(),
       });
       toast.success("Profile saved successfully!");
+
       setProfileData({
         fullName: "",
         username: "",
@@ -72,6 +78,27 @@ const ProfileProvider = ({ children }) => {
     }
   };
 
+  //--------------------------------------------------GET USER PROFILE--------------------------------------------------//
+
+  const fetchUserProfile = async () => {
+    try {
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
+      if (docSnap.exists()) {
+        setUserProfile(docSnap.data());
+      }
+    } catch (error) {
+      toast.error("Failed to fetch user profile.");
+    }
+  };
+
+  useEffect(() => {
+    if (!user) return;
+    fetchUserProfile();
+  }, [user]);
+
+  console.log(userProfile,"userProfile");
+
   return (
     <ProfileContext.Provider
       value={{
@@ -80,6 +107,7 @@ const ProfileProvider = ({ children }) => {
         skillOptions,
         jobOptions,
         saveUserProfile,
+        userProfile,
       }}
     >
       {children}

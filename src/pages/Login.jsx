@@ -26,6 +26,7 @@ function Login() {
         setPassword("");
         setUserName("");
         navigate("/");
+        setNewAccount(false);
       } catch (error) {
         if (error.code === "auth/email-already-in-use") {
           toast.error("This email is already registered.");

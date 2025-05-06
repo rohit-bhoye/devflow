@@ -22,7 +22,7 @@ function App() {
   }
   
   return (
-    <div className="relative w-full h-screen py-[5rem] px-[23rem]  overflow-y-scroll bg-[hsla(0,39.60%,79.20%,0.12)] dark:bg-black dark:text-white transition-colors duration-500">
+    <div className="container relative w-full h-screen py-[5rem] px-[23rem]  overflow-y-scroll bg-[hsla(0,39.60%,79.20%,0.12)] dark:bg-black dark:text-white">
       <ToastContainer autoClose={3000} />
       {location.pathname !== "/createprofile" && location.pathname !== "/" && (
         <Navbar />
