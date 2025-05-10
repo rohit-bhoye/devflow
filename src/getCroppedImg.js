@@ -1,5 +1,3 @@
-import uploadToCloudinary from "./uploadToCloudinary";
-
 export default async function getCroppedImg(imageSrc, crop) {
   const image = await loadImage(imageSrc);
 
@@ -30,9 +28,9 @@ export default async function getCroppedImg(imageSrc, crop) {
     }, "image/jpeg");
   });
 
-  const cloudinaryURL = uploadToCloudinary(blob);
+  const imageURL = URL.createObjectURL(blob);
 
-  return cloudinaryURL;
+  return {imageURL, blob};
 }
 
 const loadImage = (src) => {

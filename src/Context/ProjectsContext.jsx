@@ -1,148 +1,63 @@
-import { createContext, useReducer } from "react";
-import project_collection from "../assets/assets";
+import { createContext, useEffect, useState } from "react";
+import {
+  collection,
+  getDocs,
+  onSnapshot,
+  orderBy,
+  query,
+} from "firebase/firestore";
+import { db } from "../firebase/firebaseCongfig";
 export const ProjectsContext = createContext();
-
-// --------------------------------------REDUCER--------------------------------------//
-const projectsReducer = (state, action) => {
-  switch (action.type) {
-    // --------------------------------------ADD_COMMENT--------------------------------------//
-
-    case "ADD_COMMENT":
-      const AddComment = state.map((project) =>
-        project.id === action.projectId
-          ? { ...project, comments: [...project.comments, action.newComment] }
-          : project
-      );
-
-      return AddComment;
-
-    // --------------------------------------ADD_REPLY--------------------------------------//
-
-    case "ADD_REPLY":
-      const addReply = state.map((project) =>
-        project.id === action.projectId
-          ? {
-              ...project,
-              comments: project.comments.map((comment) =>
-                comment.comment_id === action.commentId
-                  ? {
-                      ...comment,
-                      replies: [...comment.replies, action.newReply],
-                    }
-                  : comment
-              ),
-            }
-          : project
-      );
-      return addReply;
-
-    // --------------------------------------PROJECT_LIKE--------------------------------------//
-
-    case "PROJECT_LIKE":
-      const projectLike = state.map((project) =>
-        project.id === action.projectId
-          ? {
-              ...project,
-              likes: new Set(project.likes).has(action.userId)
-                ? (() => {
-                    const updatedLikes = new Set(project.likes);
-                    updatedLikes.delete(action.userId);
-                    return updatedLikes;
-                  })()
-                : (() => {
-                    const updatedLikes = new Set(project.likes);
-                    updatedLikes.add(action.userId);
-                    return updatedLikes;
-                  })(),
-            }
-          : project
-      );
-      return projectLike;
-
-    // --------------------------------------COMMENT_LIKE--------------------------------------//
-
-    case "COMMENT_LIKE":
-      const commentLike = state.map((project) =>
-        project.id === action.projectId
-          ? {
-              ...project,
-              comments: project.comments.map((comment) =>
-                comment.comment_id === action.commentId
-                  ? {
-                      ...comment,
-                      likes: new Set(comment.likes).has(action.userId)
-                        ? (() => {
-                            const updatedLikes = new Set(comment.likes);
-                            updatedLikes.delete(action.userId);
-                            return updatedLikes;
-                          })()
-                        : (() => {
-                            const updatedLikes = new Set(comment.likes);
-                            updatedLikes.add(action.userId);
-                            return updatedLikes;
-                          })(),
-                    }
-                  : comment
-              ),
-            }
-          : project
-      );
-      return commentLike;
-
-    // --------------------------------------REPLY_LIKE--------------------------------------//
-
-    case "REPLY_LIKE":
-      const replyLike = state.map((project) =>
-        project.id === action.projectId
-          ? {
-              ...project,
-              comments: project.comments.map((comment) =>
-                comment.comment_id === action.commentId
-                  ? {
-                      ...comment,
-                      replies: comment.replies.map((reply) =>
-                        reply.reply_id === action.replyId
-                          ? {
-                              ...reply,
-                              likes: new Set(reply.likes).has(action.userId)
-                                ? (() => {
-                                    const updateLikes = new Set(reply.likes);
-                                    updateLikes.delete(action.userId);
-                                    return updateLikes;
-                                  })()
-                                : (() => {
-                                    const updateLikes = new Set(reply.likes);
-                                    updateLikes.add(action.userId);
-                                    return updateLikes;
-                                  })(),
-                            }
-                          : reply
-                      ),
-                    }
-                  : comment
-              ),
-            }
-          : project
-      );
-
-      return replyLike;
-
-    default:
-      return state;
-  }
-};
 
 // --------------------------------------ProjectsDataProvider--------------------------------------//
 
 const ProjectsDataProvider = ({ children }) => {
-  const [projectsData, dispatch] = useReducer(
-    projectsReducer,
-    project_collection
-  );
+  const [projectsData, setProjectsData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const userId = 1234;
+  const fetchProjectsData = async () => {
+    try {
+      const projectsRef = collection(db, "projects");
+      const q = query(projectsRef, orderBy("createdAt", "desc"));
+
+      const querySnapshot = await getDocs(q);
+      const data = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      setProjectsData(data);
+      setLoading(false);
+    } catch (error) {
+      console.error("Failed to load projects:", error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchProjectsData();
+
+    const projectsRef = collection(db, "projects");
+    const q = query(projectsRef, orderBy("createdAt", "desc"));
+
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      const data = querySnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+
+      setProjectsData(data);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  if (loading) {
+    return <div>Loading projects...</div>;
+  }
+
   return (
-    <ProjectsContext.Provider value={{ projectsData, dispatch, userId }}>
+    <ProjectsContext.Provider value={{ projectsData }}>
       {children}
     </ProjectsContext.Provider>
   );

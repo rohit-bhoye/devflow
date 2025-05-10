@@ -4,7 +4,7 @@ import getCroppedImg from "../getCroppedImg";
 import { IoCloseCircleOutline } from "react-icons/io5";
 import { toast } from "react-toastify";
 
-function ImageCropper({ imageSrc, onCropDone, onCropCancel }) {
+function ImageCropper({ imageSrc, onCropDone, onCropCancel,shape }) {
   const [zoom, setZoom] = useState(1);
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
@@ -31,7 +31,7 @@ function ImageCropper({ imageSrc, onCropDone, onCropCancel }) {
           crop={crop}
           zoom={zoom}
           aspect={1}
-          cropShape="round"
+          cropShape={shape}
           showGrid={false}
           onCropChange={setCrop}
           onZoomChange={setZoom}

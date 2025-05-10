@@ -15,7 +15,7 @@ function CreateProfile() {
     saveUserProfile,
   } = useContext(ProfileContext);
 
-  const [image, setImage] = useState(null);
+  const [image, setImage] = useState({ img: null, imagePrevUrl: null });
   const [rawImage, setRawImage] = useState(null);
   const [showCropper, setShowCropper] = useState(false);
   const [selectedSkill, setSelectedSkill] = useState(null);
@@ -33,8 +33,12 @@ function CreateProfile() {
     }
   };
 
-  const handleCropDone = (croppedImage) => {
-    setImage(croppedImage);
+  const handleCropDone = (imageData) => {
+    setImage((prev) => ({
+      ...prev,
+      img: imageData.blob,
+      imagePrevUrl: imageData.imageURL,
+    }));
     setRawImage(null);
     setShowCropper(false);
   };
@@ -83,7 +87,7 @@ function CreateProfile() {
 
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
-    await saveUserProfile(image);
+    await saveUserProfile(image.img);
   };
 
   return (
@@ -92,9 +96,9 @@ function CreateProfile() {
         Let’s Set Up Your Profile
       </h2>
       <div className="w-full  flex flex-col items-center gap-[2rem]">
-        {image ? (
+        {image.imagePrevUrl ? (
           <img
-            src={image}
+            src={image.imagePrevUrl}
             alt="profile image"
             className="w-[18rem] h-[18rem] object-cover rounded-full select-none"
           />
@@ -123,6 +127,7 @@ function CreateProfile() {
             imageSrc={rawImage}
             onCropDone={handleCropDone}
             onCropCancel={handleCropCancel}
+            shape="round"
           />
         )}
       </div>

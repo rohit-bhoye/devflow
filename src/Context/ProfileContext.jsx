@@ -14,6 +14,7 @@ import {
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { LoginContext } from "./LoginContext";
+import uploadToCloudinary from "../uploadToCloudinary";
 
 export const ProfileContext = createContext();
 
@@ -55,9 +56,14 @@ const ProfileProvider = ({ children }) => {
         return;
       }
 
+      let imageURL = null;
+      if(image){
+        imageURL = await uploadToCloudinary(image);
+      }
+
       await setDoc(doc(db, "users", user.uid), {
         ...profileData,
-        photoURL: image || null,
+        photoURL: imageURL || null,
         email: user.email,
         uid: user.uid,
         createdAt: new Date(),

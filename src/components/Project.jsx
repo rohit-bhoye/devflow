@@ -6,14 +6,31 @@ import { TfiCommentAlt } from "react-icons/tfi";
 import { RiSendPlaneFill } from "react-icons/ri";
 import Comment from "./Comment";
 import TextArea from "./TextArea";
-import { ProjectsContext } from "../Context/ProjectsContext";
+import getTimeAgo from "../getTimeAgo";
+import { LoginContext } from "../Context/LoginContext";
+import { db } from "../firebase/firebaseCongfig";
+import {
+  addDoc,
+  arrayRemove,
+  arrayUnion,
+  collection,
+  doc,
+  getDoc,
+  onSnapshot,
+  updateDoc,
+} from "firebase/firestore";
+import { assets } from "../assets/assets";
 
 function Project({ project }) {
-  const { dispatch, userId } = useContext(ProjectsContext);
+  const { user } = useContext(LoginContext);
+  const [likes, setLikes] = useState([]);
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [totalComments, setTotalComments] = useState(0);
 
+  console.log(likes);
+
+  const userId = user?.uid || null;
   // --------------------------------------SET_TOTAL_COMMENTS--------------------------------------//
   useEffect(() => {
     const topcomments = project.comments.length;
@@ -40,41 +57,67 @@ function Project({ project }) {
     setCommentText("");
   };
 
-  // --------------------------------------HANDLE_SUBMIT--------------------------------------//
+  // --------------------------------------HANDLE_COMMENT--------------------------------------//
 
-  const handleSubmit = (e) => {
+  const handleComments = async (e) => {
     e.preventDefault();
     const currentTime = new Date().getTime();
     const newComment = {
       comment_id: Date.now(),
-      user_id: "12",
-      username: "shanks",
-      profile_photo: "/",
+      user_id: userId,
+      username: project.username,
+      profile_photo: project.profile_photo,
       comment_text: commentText,
       time: currentTime,
-      likes: new Set(),
+      likes: [],
       replies: [],
     };
 
-    // --------------------------------------ADD_COMMENT--------------------------------------//
-    dispatch({
-      type: "ADD_COMMENT",
-      projectId: project.id,
-      newComment: newComment,
-    });
+    try {
+      const projectRef = doc(db, "projects", project.id);
 
-    setCommentText("");
+      const newCommentsRef = await addDoc(collection(projectRef, "comments"), {
+        ...newComment,
+      });
+
+      await updateDoc(newCommentsRef,{
+        comment_id: newCommentsRef.id,
+      })
+      setCommentText("");
+    } catch (error) {
+      console.error("Failed to add comment:", error);
+    }
   };
 
   // --------------------------------------HANDLE_PROJECT_LIKE--------------------------------------//
 
-  const handleProjectLike = () => {
-    dispatch({
-      type: "PROJECT_LIKE",
-      projectId: project.id,
-      userId: userId,
-    });
+  const handleProjectLike = async () => {
+    const projectRef = doc(db, "projects", project.id);
+
+    const projectSnap = await getDoc(projectRef);
+    const projectData = projectSnap.data();
+    const alreadyLiked = projectData.likes.includes(userId);
+
+    try {
+      await updateDoc(projectRef, {
+        likes: alreadyLiked ? arrayRemove(userId) : arrayUnion(userId),
+      });
+    } catch (error) {
+      console.error("Error updating like:", error);
+    }
   };
+
+  useEffect(()=>{
+    const projectRef = doc(db, "projects", project.id);
+    const unsubscribe = onSnapshot(projectRef,(docSnap)=>{
+      if(docSnap.exists()){
+        const data = docSnap.data();
+        setLikes(data.likes || [])
+      }
+    });
+
+    return ()=> unsubscribe();
+  },[project.id])
 
   return (
     <div className="bg-white flex flex-col gap-[2rem] w-full p-[1rem] border border-black/10 dark:bg-zinc-800 dark:text-white transition-colors duration-500 rounded-[8px]">
@@ -83,7 +126,7 @@ function Project({ project }) {
 
         <div className="h-full w-[5rem]  rounded-[50%] overflow-hidden">
           <img
-            src={project.profile_photo}
+            src={project.profile_photo ? project.profile_photo : assets.empty_profile}
             alt="profile-logo"
             className="w-full h-full object-cover"
           />
@@ -93,7 +136,11 @@ function Project({ project }) {
 
         <div className="flex flex-col justify-between py-2">
           <p className="font-[600] text-2xl">{project.username}</p>
-          <p className="text-zinc-500 dark:text-zinc-300">{project.time}</p>
+          <p className="text-zinc-500 dark:text-zinc-300">
+            {project.createdAt
+              ? getTimeAgo(project.createdAt.toDate().getTime())
+              : "Just Now"}
+          </p>
         </div>
       </div>
 
@@ -101,22 +148,23 @@ function Project({ project }) {
 
       <div className="flex flex-col gap-4">
         <h2 className="font-[500] text-xl text-zinc-700 dark:text-zinc-300">
-          {project.project_name}
+          {project.projectName}
         </h2>
         <img
-          src={project.project_image[0]}
+          src={project.imageUrl}
           alt="project preview"
-          className="w-full  max-h-[40rem] object-cover"
+          className="w-full  h-[600px] object-cover"
         />
         <div className="flex flex-wrap gap-4">
-          {project.tools.map((tool, i) => (
-            <p key={i} className="bg-zinc-200 py-1 px-2 dark:text-black">
-              {tool}
-            </p>
-          ))}
+          {project.tools.length > 0 &&
+            project.tools.map((tool) => (
+              <p key={tool.value} className="bg-zinc-200 py-1 px-2 dark:text-black">
+                {tool.label}
+              </p>
+            ))}
         </div>
         <p className="text-zinc-500 dark:text-zinc-300">
-          {project.project_description}
+          {project.description}
         </p>
       </div>
 
@@ -126,7 +174,7 @@ function Project({ project }) {
         <div className="flex gap-2">
           <IoMdThumbsUp className="transform -scale-x-100 h-[1.3rem] w-[1.3rem] " />
           <p className="text-zinc-500 dark:text-zinc-300 ">
-            {project.likes.size}
+            {likes.length}
           </p>
         </div>
 
@@ -148,7 +196,7 @@ function Project({ project }) {
           onClick={handleProjectLike}
           className="flex items-center gap-2 hover:bg-zinc-200 rounded-[5px] cursor-pointer py-[.5rem] px-[1rem] dark:hover:bg-zinc-600 select-none"
         >
-          {project.likes.has(userId) ? (
+          {likes.includes(userId) ? (
             <BsHandThumbsUpFill className="transform -scale-x-100 h-[1.3rem] w-[1.3rem]" />
           ) : (
             <BsHandThumbsUp className="transform -scale-x-100 h-[1.3rem] w-[1.3rem]" />
@@ -183,7 +231,7 @@ function Project({ project }) {
             text={commentText}
             handleText={handleText}
             handleCancel={handleCancel}
-            handleSubmit={handleSubmit}
+            handleSubmit={handleComments}
           />
           <div className="mt-[1rem] flex flex-col gap-[.8rem]">
             {project.comments.map((comment) => (

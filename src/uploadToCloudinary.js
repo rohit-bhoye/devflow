@@ -25,6 +25,7 @@ const uploadToCloudinary = async (imageBlob) => {
 
     return data.secure_url;
   } catch (error) {
+    console.log(`Cloudinary upload failed: ${error.message}`)
     throw new Error(`Cloudinary upload failed: ${error.message}`);
   }
 };

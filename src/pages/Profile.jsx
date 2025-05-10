@@ -1,15 +1,23 @@
 import { signOut } from "firebase/auth";
-import React, { useContext } from "react";
-import { auth } from "../firebase/firebaseCongfig";
+import React, { useContext, useEffect, useState } from "react";
+import { auth, db } from "../firebase/firebaseCongfig";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { ProfileContext } from "../Context/ProfileContext";
 import { assets } from "../assets/assets";
 import { IoIosSettings } from "react-icons/io";
 import { GrProjects } from "react-icons/gr";
+import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
+import { LoginContext } from "../Context/LoginContext";
+import Project from "../components/Project";
 
 function Profile() {
   const { userProfile } = useContext(ProfileContext);
+  const { user } = useContext(LoginContext);
+
+  const [userProjects, setUserProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   const navigate = useNavigate();
   const handleLogout = async () => {
     try {
@@ -25,8 +33,35 @@ function Profile() {
     }
   };
 
+  const fetchUserProjects = async () => {
+    if (!user.uid) return;
+
+    try {
+      const projectsRef = collection(db, "projects");
+      const q = query(
+        projectsRef,
+        where("projectId", "==", user.uid),
+        orderBy("createdAt", "desc")
+      );
+      const querySnapShot = await getDocs(q);
+      const data = querySnapShot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setLoading(false);
+      setUserProjects(data);
+    } catch (error) {
+      console.log(error, "error");
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserProjects();
+  }, [user.uid]);
+
   return (
-    <div className="container bg-white p-[1rem] dark:bg-zinc-800 dark:text-white rounded-[8px] border border-black/10  ">
+    <div className="container bg-white  dark:bg-zinc-800 dark:text-white rounded-[8px] border border-black/10  ">
       {/* //--------------------------------------------------USER PROFILE--------------------------------------------------// */}
 
       <div className="flex flex-row items-center p-[1rem] gap-[5rem]  ">
@@ -47,7 +82,7 @@ function Profile() {
           </div>
 
           <div className="flex gap-2 items-center">
-            <p className="font-semibold text-lg">0</p>{" "}
+            <p className="font-semibold text-lg">{userProjects.length}</p>{" "}
             <p className="text-zinc-500 dark:text-zinc-300">posts</p>
           </div>
           <div className="flex flex-col gap-3">
@@ -80,18 +115,33 @@ function Profile() {
 
       {/* //--------------------------------------------------USER POSTS--------------------------------------------------// */}
 
-      <div className="flex flex-col items-center justify-center gap-4 h-[25rem]">
-        <GrProjects className="text-5xl" />
-        <h3 className="text-4xl font-[900] mt-[1rem]">Share Projects</h3>
-        <p className="text-md">
-          When you share projects, they will appear on your profile.
-        </p>
-        <Link to={"/addproject"}>
-          <p className="text-blue-600 dark:text-blue-500 text-md font-[500]">
-            Share your first project
-          </p>
-        </Link>
-      </div>
+      {loading ? (
+        <div className="flex justify-center items-center w-full h-[20rem]"><p>Loading...</p></div>
+      ) : (
+        <div>
+          {" "}
+          {userProjects.length > 0 ? (
+            <div className="flex flex-col gap-[2rem] w-full">
+              {userProjects.map((project) => (
+                <Project key={project.id} project={project} />
+              ))}
+            </div>
+          ) : (
+            <div className="flex flex-col items-center justify-center gap-4 h-[25rem]">
+              <GrProjects className="text-5xl" />
+              <h3 className="text-4xl font-[900] mt-[1rem]">Share Projects</h3>
+              <p className="text-md">
+                When you share projects, they will appear on your profile.
+              </p>
+              <Link to={"/addproject"}>
+                <p className="text-blue-600 dark:text-blue-500 text-md font-[500]">
+                  Share your first project
+                </p>
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
 
       <button
         onClick={handleLogout}
