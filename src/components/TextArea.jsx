@@ -41,7 +41,7 @@ function TextArea({
             type="submit"
             disabled={text.trim().length === 0}
             className={`py-[5px] px-[10px] rounded-full text-white cursor-pointer select-none ${
-              text.length === 0
+              text.trim().length === 0
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-blue-500 hover:bg-blue-700"
             }`}

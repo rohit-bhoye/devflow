@@ -61,7 +61,7 @@ function Profile() {
   }, [user.uid]);
 
   return (
-    <div className="container bg-white  dark:bg-zinc-800 dark:text-white rounded-[8px] border border-black/10  ">
+    <div className="container bg-white w-full dark:bg-zinc-800 dark:text-white rounded-[8px] border border-black/10  ">
       {/* //--------------------------------------------------USER PROFILE--------------------------------------------------// */}
 
       <div className="flex flex-row items-center p-[1rem] gap-[5rem]  ">

@@ -7,7 +7,7 @@ function Home() {
   const { projectsData } = useContext(ProjectsContext);
 
   return (
-    <div className="flex flex-col gap-[2rem] w-full">
+    <div className="w-full flex flex-col gap-[2rem]">
       {projectsData.map((project) => (
         <Project key={project.id} project={project} />
       ))}

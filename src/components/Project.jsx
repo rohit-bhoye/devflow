@@ -16,28 +16,57 @@ import {
   collection,
   doc,
   getDoc,
+  getDocs,
   onSnapshot,
+  orderBy,
+  query,
   updateDoc,
 } from "firebase/firestore";
 import { assets } from "../assets/assets";
+import { ProfileContext } from "../Context/ProfileContext";
 
 function Project({ project }) {
   const { user } = useContext(LoginContext);
+  const { userProfile } = useContext(ProfileContext);
   const [likes, setLikes] = useState([]);
+  const [comments, setComments] = useState([]);
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [totalComments, setTotalComments] = useState(0);
 
-  console.log(likes);
-
   const userId = user?.uid || null;
   // --------------------------------------SET_TOTAL_COMMENTS--------------------------------------//
+  const fetchTotalComments = async () => {
+
+    setTotalComments(comments.length)
+    // try {
+    //   let totalRepliesCount = 0;
+    //   for (const comment of comments) {
+    //     const repliesRef = collection(
+    //       db,
+    //       "projects",
+    //       project.id,
+    //       "comments",
+    //       comment.comment_id,
+    //       "replies"
+    //     );
+    //     const repliesSnapShot = await getDocs(repliesRef);
+    //     totalRepliesCount += repliesSnapShot.docs.length;
+    //   }
+    //   const totalTopComments = comments.length;
+    //   const total = totalTopComments + totalRepliesCount;
+    //   setTotalComments(total);
+    // } catch (error) {
+    //   console.error("Error fetching replies count:", error);
+    //   setTotalComments(comments.length);
+    // }
+  };
+
   useEffect(() => {
-    const topcomments = project.comments.length;
-    const allReplies = project.comments.flatMap((c) => c.replies);
-    const total_comments = topcomments + allReplies.length;
-    setTotalComments(total_comments);
-  }, [project.comments]);
+    if (comments.length > 0) {
+      fetchTotalComments();
+    }
+  }, [comments, project.id]);
 
   // --------------------------------------SHOW_COMMENTS--------------------------------------//
 
@@ -63,10 +92,9 @@ function Project({ project }) {
     e.preventDefault();
     const currentTime = new Date().getTime();
     const newComment = {
-      comment_id: Date.now(),
       user_id: userId,
-      username: project.username,
-      profile_photo: project.profile_photo,
+      username: userProfile.username,
+      profile_photo: userProfile.photoURL,
       comment_text: commentText,
       time: currentTime,
       likes: [],
@@ -76,29 +104,38 @@ function Project({ project }) {
     try {
       const projectRef = doc(db, "projects", project.id);
 
-      const newCommentsRef = await addDoc(collection(projectRef, "comments"), {
+      await addDoc(collection(projectRef, "comments"), {
         ...newComment,
       });
-
-      await updateDoc(newCommentsRef,{
-        comment_id: newCommentsRef.id,
-      })
       setCommentText("");
     } catch (error) {
       console.error("Failed to add comment:", error);
     }
   };
 
+  useEffect(() => {
+    const commentsRef = collection(db, "projects", project.id, "comments");
+    const q = query(commentsRef, orderBy("time", "desc"));
+    const unsubscribe = onSnapshot(q, (querySnapShot) => {
+      const commentsData = querySnapShot.docs.map((doc) => ({
+        comment_id: doc.id,
+        ...doc.data(),
+      }));
+      setComments(commentsData);
+    });
+
+    return () => unsubscribe();
+  }, [project.id]);
+
   // --------------------------------------HANDLE_PROJECT_LIKE--------------------------------------//
 
   const handleProjectLike = async () => {
-    const projectRef = doc(db, "projects", project.id);
-
-    const projectSnap = await getDoc(projectRef);
-    const projectData = projectSnap.data();
-    const alreadyLiked = projectData.likes.includes(userId);
-
     try {
+      const projectRef = doc(db, "projects", project.id);
+
+      const projectSnap = await getDoc(projectRef);
+      const projectData = projectSnap.data();
+      const alreadyLiked = projectData.likes.includes(userId);
       await updateDoc(projectRef, {
         likes: alreadyLiked ? arrayRemove(userId) : arrayUnion(userId),
       });
@@ -107,17 +144,17 @@ function Project({ project }) {
     }
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     const projectRef = doc(db, "projects", project.id);
-    const unsubscribe = onSnapshot(projectRef,(docSnap)=>{
-      if(docSnap.exists()){
+    const unsubscribe = onSnapshot(projectRef, (docSnap) => {
+      if (docSnap.exists()) {
         const data = docSnap.data();
-        setLikes(data.likes || [])
+        setLikes(data.likes || []);
       }
     });
 
-    return ()=> unsubscribe();
-  },[project.id])
+    return () => unsubscribe();
+  }, [project.id]);
 
   return (
     <div className="bg-white flex flex-col gap-[2rem] w-full p-[1rem] border border-black/10 dark:bg-zinc-800 dark:text-white transition-colors duration-500 rounded-[8px]">
@@ -126,7 +163,11 @@ function Project({ project }) {
 
         <div className="h-full w-[5rem]  rounded-[50%] overflow-hidden">
           <img
-            src={project.profile_photo ? project.profile_photo : assets.empty_profile}
+            src={
+              project.profile_photo
+                ? project.profile_photo
+                : assets.empty_profile
+            }
             alt="profile-logo"
             className="w-full h-full object-cover"
           />
@@ -158,7 +199,10 @@ function Project({ project }) {
         <div className="flex flex-wrap gap-4">
           {project.tools.length > 0 &&
             project.tools.map((tool) => (
-              <p key={tool.value} className="bg-zinc-200 py-1 px-2 dark:text-black">
+              <p
+                key={tool.value}
+                className="bg-zinc-200 py-1 px-2 dark:text-black rounded-[5px]"
+              >
                 {tool.label}
               </p>
             ))}
@@ -173,9 +217,7 @@ function Project({ project }) {
       <div className="flex items-center justify-between">
         <div className="flex gap-2">
           <IoMdThumbsUp className="transform -scale-x-100 h-[1.3rem] w-[1.3rem] " />
-          <p className="text-zinc-500 dark:text-zinc-300 ">
-            {likes.length}
-          </p>
+          <p className="text-zinc-500 dark:text-zinc-300 ">{likes.length}</p>
         </div>
 
         <div
@@ -233,14 +275,15 @@ function Project({ project }) {
             handleCancel={handleCancel}
             handleSubmit={handleComments}
           />
-          <div className="mt-[1rem] flex flex-col gap-[.8rem]">
-            {project.comments.map((comment) => (
-              <Comment
-                key={comment.comment_id}
-                comment={comment}
-                projectId={project.id}
-              />
-            ))}
+          <div className="mt-[1rem] flex flex-col gap-[1rem]">
+            {comments.length > 0 &&
+              comments.map((comment) => (
+                <Comment
+                  key={comment.comment_id}
+                  comment={comment}
+                  projectId={project.id}
+                />
+              ))}
           </div>
         </div>
       )}

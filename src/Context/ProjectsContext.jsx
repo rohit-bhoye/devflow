@@ -35,6 +35,7 @@ const ProjectsDataProvider = ({ children }) => {
   };
 
   useEffect(() => {
+    
     fetchProjectsData();
 
     const projectsRef = collection(db, "projects");
