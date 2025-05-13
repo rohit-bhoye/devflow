@@ -1,8 +1,7 @@
-import { signOut } from "firebase/auth";
 import React, { useContext, useEffect, useState } from "react";
-import { auth, db } from "../firebase/firebaseCongfig";
-import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-toastify";
+import { db } from "../firebase/firebaseCongfig";
+import { Link } from "react-router-dom";
+
 import { ProfileContext } from "../Context/ProfileContext";
 import { assets } from "../assets/assets";
 import { IoIosSettings } from "react-icons/io";
@@ -10,27 +9,20 @@ import { GrProjects } from "react-icons/gr";
 import { collection, getDocs, orderBy, query, where } from "firebase/firestore";
 import { LoginContext } from "../Context/LoginContext";
 import Project from "../components/Project";
+import Settings from "../components/Settings";
 
 function Profile() {
-  const { userProfile } = useContext(ProfileContext);
+  const { userProfile, userProjects, setUserProjects, hasFetchedRef } =
+    useContext(ProfileContext);
   const { user } = useContext(LoginContext);
 
-  const [userProjects, setUserProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [showSettings, setShowSettings] = useState(false);
 
-  const navigate = useNavigate();
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      document.documentElement.classList.remove("dark");
-      navigate("/");
-    } catch (error) {
-      if (error.code === "auth/network-request-failed") {
-        toast.error("Network error. Please check your connection.");
-      } else {
-        toast.error("Logout failed. Please try again.");
-      }
-    }
+  const onPage = "profile";
+
+  const handleSettings = () => {
+    setShowSettings(true);
   };
 
   const fetchUserProjects = async () => {
@@ -50,6 +42,7 @@ function Profile() {
       }));
       setLoading(false);
       setUserProjects(data);
+      hasFetchedRef.current = true;
     } catch (error) {
       console.log(error, "error");
       setLoading(false);
@@ -57,14 +50,18 @@ function Profile() {
   };
 
   useEffect(() => {
-    fetchUserProjects();
+    if (user.uid && !hasFetchedRef.current) {
+      fetchUserProjects();
+    } else {
+      setLoading(false);
+    }
   }, [user.uid]);
 
   return (
-    <div className="container bg-white w-full dark:bg-zinc-800 dark:text-white rounded-[8px] border border-black/10  ">
+    <div className="container w-full dark:text-white rounded-[8px] flex flex-col gap-4">
       {/* //--------------------------------------------------USER PROFILE--------------------------------------------------// */}
 
-      <div className="flex flex-row items-center p-[1rem] gap-[5rem]  ">
+      <div className="flex flex-row items-center p-[1rem] gap-[5rem] bg-white dark:bg-zinc-800 rounded-[8px]">
         <img
           src={`${
             userProfile.photoURL ? userProfile.photoURL : assets.empty_profile
@@ -78,7 +75,10 @@ function Profile() {
             <button className="bg-zinc-900 dark:bg-zinc-300 dark:text-zinc-900 text-white py-[5px] px-[15px] font-semibold rounded-[8px] cursor-pointer  ">
               Edit profile
             </button>
-            <IoIosSettings className="text-4xl  text-zinc-900 cursor-pointer dark:text-zinc-300  " />
+            <IoIosSettings
+              onClick={handleSettings}
+              className="text-4xl  text-zinc-900 cursor-pointer dark:text-zinc-300  "
+            />
           </div>
 
           <div className="flex gap-2 items-center">
@@ -111,19 +111,19 @@ function Profile() {
         </div>
       </div>
 
-      <hr className="border-t-[0.5px] border-zinc-300 dark:border-zinc-600 mt-[2rem]" />
-
       {/* //--------------------------------------------------USER POSTS--------------------------------------------------// */}
 
       {loading ? (
-        <div className="flex justify-center items-center w-full h-[20rem]"><p>Loading...</p></div>
+        <div className="flex justify-center items-center w-full h-[20rem]">
+          <p>Loading...</p>
+        </div>
       ) : (
         <div>
           {" "}
           {userProjects.length > 0 ? (
             <div className="flex flex-col gap-[2rem] w-full">
               {userProjects.map((project) => (
-                <Project key={project.id} project={project} />
+                <Project key={project.id} project={project} onPage={onPage} />
               ))}
             </div>
           ) : (
@@ -143,12 +143,7 @@ function Profile() {
         </div>
       )}
 
-      <button
-        onClick={handleLogout}
-        className="bg-blue-700 text-white py-[5px] px-[20px] rounded-[5px] cursor-pointer"
-      >
-        Log out
-      </button>
+      {showSettings && <Settings setShowSettings={setShowSettings} />}
     </div>
   );
 }

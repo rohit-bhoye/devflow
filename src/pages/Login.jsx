@@ -12,6 +12,7 @@ import { doc, getDoc } from "firebase/firestore";
 function Login() {
   const { userName, setUserName, email, setEmail, password, setPassword } =
     useContext(LoginContext);
+
   const [newAccount, setNewAccount] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -79,7 +80,7 @@ function Login() {
     setPassword(e.target.value);
   };
   return (
-    <div className="absolute top-0 left-0 w-full h-screen z-99 bg-zinc-100 flex flex-col items-center justify-center gap-[2rem]">
+    <div className="absolute text-black top-0 left-0 w-full h-screen z-99 bg-zinc-100 flex flex-col items-center justify-center gap-[2rem]">
       <h1 className="text-blue-800 font-bold text-7xl">DevFlow</h1>
       <form
         onSubmit={handleSubmit}

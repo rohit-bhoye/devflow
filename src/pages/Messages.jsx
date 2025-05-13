@@ -1,9 +1,11 @@
-import React from 'react'
+import React from "react";
 
 function Messages() {
   return (
-    <div>Messages</div>
-  )
+    <div className="container w-full dark:text-white rounded-[8px] flex flex-col gap-4">
+      <p>message</p>
+    </div>
+  );
 }
 
-export default Messages
+export default Messages;

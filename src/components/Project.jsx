@@ -4,6 +4,7 @@ import { BsHandThumbsUp } from "react-icons/bs";
 import { BsHandThumbsUpFill } from "react-icons/bs";
 import { TfiCommentAlt } from "react-icons/tfi";
 import { RiSendPlaneFill } from "react-icons/ri";
+import { BsThreeDots } from "react-icons/bs";
 import Comment from "./Comment";
 import TextArea from "./TextArea";
 import getTimeAgo from "../getTimeAgo";
@@ -25,7 +26,7 @@ import {
 import { assets } from "../assets/assets";
 import { ProfileContext } from "../Context/ProfileContext";
 
-function Project({ project }) {
+function Project({ project, onPage }) {
   const { user } = useContext(LoginContext);
   const { userProfile } = useContext(ProfileContext);
   const [likes, setLikes] = useState([]);
@@ -33,12 +34,17 @@ function Project({ project }) {
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [totalComments, setTotalComments] = useState(0);
+  const [showMenu, setShowMenu] = useState(false);
 
   const userId = user?.uid || null;
+
+  const handleActionMenu = () => {
+    setShowMenu(!showMenu);
+  };
+
   // --------------------------------------SET_TOTAL_COMMENTS--------------------------------------//
   const fetchTotalComments = async () => {
-
-    setTotalComments(comments.length)
+    setTotalComments(comments.length);
     // try {
     //   let totalRepliesCount = 0;
     //   for (const comment of comments) {
@@ -158,30 +164,76 @@ function Project({ project }) {
 
   return (
     <div className="bg-white flex flex-col gap-[2rem] w-full p-[1rem] border border-black/10 dark:bg-zinc-800 dark:text-white transition-colors duration-500 rounded-[8px]">
-      <div className="flex gap-4 h-[5rem] ">
+      <div className="w-full flex flex-row justify-between">
         {/* // --------------------------------------PROFILE_PHOTO--------------------------------------// */}
 
-        <div className="h-full w-[5rem]  rounded-[50%] overflow-hidden">
-          <img
-            src={
-              project.profile_photo
-                ? project.profile_photo
-                : assets.empty_profile
-            }
-            alt="profile-logo"
-            className="w-full h-full object-cover"
-          />
+        <div className="flex gap-4 h-[5rem] ">
+          <div className="h-full w-[5rem]  rounded-[50%] overflow-hidden">
+            <img
+              src={
+                project.profile_photo
+                  ? project.profile_photo
+                  : assets.empty_profile
+              }
+              alt="profile-logo"
+              className="w-full h-full object-cover"
+            />
+          </div>
+
+          {/* // --------------------------------------USERNAME--------------------------------------// */}
+
+          <div className="flex flex-col justify-between py-2">
+            <p className="font-[600] text-2xl">{project.username}</p>
+            <p className="text-zinc-500 dark:text-zinc-300">
+              {project.createdAt
+                ? getTimeAgo(project.createdAt.toDate().getTime())
+                : "Just Now"}
+            </p>
+          </div>
         </div>
-
-        {/* // --------------------------------------USERNAME--------------------------------------// */}
-
-        <div className="flex flex-col justify-between py-2">
-          <p className="font-[600] text-2xl">{project.username}</p>
-          <p className="text-zinc-500 dark:text-zinc-300">
-            {project.createdAt
-              ? getTimeAgo(project.createdAt.toDate().getTime())
-              : "Just Now"}
-          </p>
+        <div className="relative">
+          <BsThreeDots
+            onClick={handleActionMenu}
+            className="cursor-pointer text-xl"
+          />
+          {showMenu && (
+            <ul className="absolute right-0 mt-2 w-[10rem] bg-white dark:bg-zinc-800 border-[1px] border-black/30 dark:border-white/30 rounded-md z-50 overflow-hidden">
+              {onPage === "profile" && (
+                <>
+                  <li className="h-[2rem] border-b-[1px] border-black/30 dark:border-white/30 ">
+                    <button className="h-full w-full text-center cursor-pointer">
+                      Delete
+                    </button>
+                  </li>
+                  <li className="h-[2rem]">
+                    <button
+                      onClick={() => setShowMenu(false)}
+                      className="h-full w-full cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                  </li>
+                </>
+              )}
+              {onPage === "home" && (
+                <>
+                  <li className="h-[2rem] border-b-[1px] border-black/30 dark:border-white/30 ">
+                    <button className="h-full w-full text-center cursor-pointer">
+                      Report
+                    </button>
+                  </li>
+                  <li className="h-[2rem]">
+                    <button
+                      onClick={() => setShowMenu(false)}
+                      className="h-full w-full cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                  </li>
+                </>
+              )}
+            </ul>
+          )}
         </div>
       </div>
 

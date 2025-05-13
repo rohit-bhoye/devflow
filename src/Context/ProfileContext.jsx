@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { skillOptions } from "../assets/assets";
 import { jobOptions } from "../assets/assets";
 import { db } from "../firebase/firebaseCongfig";
@@ -21,6 +21,7 @@ export const ProfileContext = createContext();
 const ProfileProvider = ({ children }) => {
   const { user } = useContext(LoginContext);
   const [userProfile, setUserProfile] = useState(null);
+  const [userProjects, setUserProjects] = useState([]);
   const [profileData, setProfileData] = useState({
     fullName: "",
     username: "",
@@ -30,6 +31,7 @@ const ProfileProvider = ({ children }) => {
     gender: "",
   });
 
+  const hasFetchedRef = useRef(false);
   const navigate = useNavigate();
 
   //--------------------------------------------------SAVE USER PROFILE--------------------------------------------------//
@@ -103,7 +105,6 @@ const ProfileProvider = ({ children }) => {
     fetchUserProfile();
   }, [user]);
 
-  console.log(userProfile,"userProfile");
 
   return (
     <ProfileContext.Provider
@@ -114,6 +115,9 @@ const ProfileProvider = ({ children }) => {
         jobOptions,
         saveUserProfile,
         userProfile,
+        userProjects, 
+        setUserProjects,
+        hasFetchedRef
       }}
     >
       {children}
